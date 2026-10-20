@@ -1,0 +1,53 @@
+@host = http://localhost:5080
+@user = 11111111-1111-1111-1111-111111111111
+@emergencyId = 9fd5bb0f-617f-418b-bbcf-3aa7b0070829
+@responderId = 37d540ac-440b-4948-b7ad-bda1d695ff58
+
+### Home screen (user, unread badge, current address, SOS availability)
+GET {{host}}/api/home?lat=40.7357&lng=-74.1724
+X-User-Id: {{user}}
+
+### Press SOS  -> copy "emergencyId" from the response
+POST {{host}}/api/emergencies
+X-User-Id: {{user}}
+Content-Type: application/json
+
+{ "latitude": 40.7357, "longitude": -74.1724 }
+
+### Status ("Ambulance and responders are on a way")
+GET {{host}}/api/emergencies/{{emergencyId}}
+X-User-Id: {{user}}
+
+### Map: user location, responders, ETA, route
+GET {{host}}/api/emergencies/{{emergencyId}}/map
+X-User-Id: {{user}}
+
+### Instructions ("Open full instruction")
+GET {{host}}/api/emergencies/{{emergencyId}}/instructions
+X-User-Id: {{user}}
+
+### Call a responder (returns tel: URI)
+POST {{host}}/api/emergencies/{{emergencyId}}/responders/{{responderId}}/call
+X-User-Id: {{user}}
+
+### Message a responder
+POST {{host}}/api/emergencies/{{emergencyId}}/responders/{{responderId}}/messages
+X-User-Id: {{user}}
+Content-Type: application/json
+
+{ "text": "I'm in the second floor apartment, door is open." }
+
+### Dev: move responders closer (repeat until they arrive)
+POST {{host}}/api/dev/emergencies/{{emergencyId}}/simulate-tick
+X-User-Id: {{user}}
+
+### Cancel request
+POST {{host}}/api/emergencies/{{emergencyId}}/cancel
+X-User-Id: {{user}}
+Content-Type: application/json
+
+{ "reason": "False alarm" }
+
+### Notifications
+GET {{host}}/api/notifications
+X-User-Id: {{user}}
